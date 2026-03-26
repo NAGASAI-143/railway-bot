@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="portal-shell">
+  <section class="portal-hero">
+    <div class="portal-badge">New Registration</div>
+    <h1>Create your booking account</h1>
+    <p>Register once to continue bookings, store journey activity and use the assistant for ticketing support.</p>
+    <div class="portal-highlights">
+      <span>Fast signup</span>
+      <span>Guided booking</span>
+      <span>Rail enquiry tools</span>
+      <span>UPI flow support</span>
+    </div>
+  </section>
+
+  <section class="auth portal-card">
+    <div class="card-head">
+      <h2>Create Account</h2>
+      <p>Fill in your basic details to continue.</p>
+    </div>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="post" class="stack">
+      <label>Username<input type="text" name="username" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Password<input type="password" name="password" required></label>
+      <button class="button" type="submit">Register</button>
+    </form>
+    <p class="hint">Already have an account? <a href="{{ url_for('login') }}">Login</a>.</p>
+  </section>
+</section>
+{% endblock %}

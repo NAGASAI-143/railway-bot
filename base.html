@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailSmart</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="top-strip">
+    <div class="top-strip-inner">
+      <span>RailSmart Passenger Reservation System</span>
+      <span class="top-note">Train tickets, PNR, live status and booking support</span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">RailSmart</span>
+        <span class="brand-tag">Next Generation eTicketing</span>
+      </div>
+      <nav class="nav">
+        {% if session.get('user') %}
+          <a href="{{ url_for('chat') }}" class="nav-link">Plan Journey</a>
+          <a href="{{ url_for('chat') }}" class="nav-link">Book Ticket</a>
+          <a href="{{ url_for('chat') }}" class="nav-link">PNR Enquiry</a>
+          <a href="{{ url_for('logout') }}" class="button">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+          <a href="{{ url_for('register') }}" class="button">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>RailSmart is a practice booking interface inspired by railway reservation portals. It is not connected to any real railway system.</p>
+  </footer>
+</body>
+</html>
