@@ -1,0 +1,14 @@
+{
+  "name": "railsmart",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "irctc:pnr": "node irctc_bridge.mjs pnr 1234567890",
+    "irctc:live": "node irctc_bridge.mjs live 12345",
+    "irctc:search": "node irctc_bridge.mjs search NDLS BCT"
+  },
+  "dependencies": {
+    "irctc-connect": "2.1.3"
+  }
+}

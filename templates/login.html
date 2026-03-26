@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="portal-shell">
+  <section class="portal-hero">
+    <div class="portal-badge">Passenger Services</div>
+    <h1>Book rail journeys with smart assistance</h1>
+    <p>Search trains, monitor PNR, check seat availability and continue your booking in one guided flow.</p>
+    <div class="portal-highlights">
+      <span>Plan journey</span>
+      <span>Check PNR</span>
+      <span>Live train status</span>
+      <span>Voice-enabled help</span>
+    </div>
+  </section>
+
+  <section class="auth portal-card">
+    <div class="card-head">
+      <h2>Login</h2>
+      <p>Access ticketing, journey search and chatbot assistance.</p>
+    </div>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="post" class="stack">
+      <label>Username<input type="text" name="username" required></label>
+      <label>Password<input type="password" name="password" required></label>
+      <button class="button" type="submit">Login</button>
+    </form>
+    <p class="hint">New user? <a href="{{ url_for('register') }}">Create account</a>.</p>
+  </section>
+</section>
+{% endblock %}

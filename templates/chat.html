@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="chat-page" data-chat-root>
+  <header class="chat-head">
+    <div>
+      <h2>Welcome {{ user }}</h2>
+      <p>Your AI agent can handle bookings, PNR, availability, payments, and more.</p>
+    </div>
+    <button class="ghost" type="button" data-chat-reset>Reset</button>
+  </header>
+
+  <div class="chat-quick-actions">
+    <button type="button" data-quick="Book ticket">Book Ticket</button>
+    <button type="button" data-quick="Tatkal booking">Tatkal Booking</button>
+    <button type="button" data-quick="Check PNR">Check PNR</button>
+    <button type="button" data-quick="Seat availability">Seat Availability</button>
+    <button type="button" data-quick="Live status">Live Status</button>
+    <button type="button" data-quick="Fare comparison">Fare Comparison</button>
+    <button type="button" data-quick="Cancel ticket">Cancel Ticket</button>
+  </div>
+
+  <section class="suggestion-windows">
+    <h3>Suggested Actions</h3>
+    <div class="suggestion-grid">
+      <button type="button" class="suggestion-card" data-quick="Book ticket from Hyderabad to Delhi on 21 May">
+        <span class="title">Plan a trip</span>
+        <span class="meta">Hyderabad to Delhi, 21 May</span>
+      </button>
+      <button type="button" class="suggestion-card" data-quick="Check PNR 1234567890">
+        <span class="title">Check PNR</span>
+        <span class="meta">Get coach and berth details</span>
+      </button>
+      <button type="button" class="suggestion-card" data-quick="Seat availability from Chennai to Mumbai on 2026-03-22">
+        <span class="title">Seat availability</span>
+        <span class="meta">Chennai to Mumbai, 22 Mar</span>
+      </button>
+      <button type="button" class="suggestion-card" data-quick="Fare comparison for 3A, 2A, SL">
+        <span class="title">Compare fares</span>
+        <span class="meta">3A vs 2A vs SL</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="ticket-dashboard">
+    <div class="ticket-board-head">
+      <h3>Virtual Tickets</h3>
+      <p>Your latest booked tickets appear here in Indian Railways style.</p>
+    </div>
+    {% if bookings %}
+      <div class="ticket-grid" data-ticket-grid>
+        {% for booking in bookings %}
+          <article class="ticket-card">
+            <div class="ticket-band">
+              <span class="ticket-brand">RailSmart e-Ticket</span>
+              <span class="ticket-status">CONFIRMED</span>
+            </div>
+            <div class="ticket-main">
+              <div class="ticket-route">
+                <div>
+                  <span class="ticket-label">From</span>
+                  <strong>{{ booking.from }}</strong>
+                </div>
+                <div class="ticket-arrow">-></div>
+                <div>
+                  <span class="ticket-label">To</span>
+                  <strong>{{ booking.to }}</strong>
+                </div>
+              </div>
+              <div class="ticket-train-line">
+                <span>{{ booking.train.number }} {{ booking.train.name }}</span>
+                <span>{{ booking.train.dep }} - {{ booking.train.arr }}</span>
+              </div>
+              <div class="ticket-meta">
+                <span><strong>PNR:</strong> {{ booking.pnr }}</span>
+                <span><strong>Date:</strong> {{ booking.journey_date }}</span>
+                <span><strong>Class:</strong> {{ booking.class }}</span>
+                <span><strong>Quota:</strong> {{ booking.quota }}</span>
+                <span><strong>Coach Pref:</strong> {{ booking.coach_preference or 'No preference' }}</span>
+                <span><strong>Fare:</strong> Rs {{ booking.fare }}</span>
+                <span><strong>Payment:</strong> {{ booking.payment_method }}</span>
+              </div>
+              <div class="ticket-passengers">
+                <span class="ticket-label">Passengers</span>
+                <div>
+                  {% for passenger in booking.passengers %}
+                    <span class="passenger-chip">{{ passenger.name }} / {{ passenger.age }} / {{ passenger.gender }} / {{ passenger.food }} / Pref: {{ passenger.seat_preference or 'No preference' }} / Seat: {{ passenger.coach or '-' }}-{{ passenger.seat_no or '-' }} {{ passenger.assigned_seat or '-' }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="ticket-actions">
+              <a class="button" href="{{ url_for('ticket_pdf', pnr=booking.pnr) }}">Download PDF</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      <div class="ticket-empty hidden" data-ticket-empty>
+        <p>No virtual tickets yet. Complete a booking to see your Indian-style e-ticket here.</p>
+      </div>
+    {% else %}
+      <div class="ticket-grid" data-ticket-grid></div>
+      <div class="ticket-empty" data-ticket-empty>
+        <p>No virtual tickets yet. Complete a booking to see your Indian-style e-ticket here.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <div class="chat-shell">
+    <aside class="trip-summary" data-trip-summary>
+      <div class="summary-head">
+        <h3>AI Trip Summary</h3>
+        <p>The chatbot updates this as it builds your trip.</p>
+      </div>
+      <div class="summary-empty" data-summary-empty>No active trip yet. Start with "Book ticket".</div>
+      <div class="summary-grid hidden" data-summary-grid>
+        <span><strong>Mode</strong><em data-summary-mode>-</em></span>
+        <span><strong>Route</strong><em data-summary-route>-</em></span>
+        <span><strong>Date</strong><em data-summary-date>-</em></span>
+        <span><strong>Class</strong><em data-summary-class>-</em></span>
+        <span><strong>Quota</strong><em data-summary-quota>-</em></span>
+        <span><strong>Passengers</strong><em data-summary-passengers>-</em></span>
+        <span><strong>Seat Pref</strong><em data-summary-seat>-</em></span>
+        <span><strong>Coach Pref</strong><em data-summary-coach>-</em></span>
+        <span><strong>Fare</strong><em data-summary-fare>-</em></span>
+        <span><strong>Train</strong><em data-summary-train>-</em></span>
+      </div>
+      <div class="train-cards hidden" data-train-cards></div>
+    </aside>
+    <section class="chat-main">
+      <div class="chat-thread-head">
+        <div>
+          <h3>Chat With RailSmart</h3>
+          <p>Type naturally. Example: "I need a ticket from Hyderabad to Delhi tomorrow."</p>
+        </div>
+      </div>
+      <div class="chat-messages" data-chat-messages aria-live="polite">
+        <div class="chat-empty">Try: "Book ticket from Hyderabad to Delhi on 21 May"</div>
+        <div class="chat-msg bot">
+          <div class="bubble">Hi {{ user }}! What would you like to do today?</div>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <div class="chat-suggestions" data-chat-suggestions></div>
+        <div class="voice-tools">
+          <span class="voice-status" data-voice-status>Voice ready</span>
+        </div>
+        <div class="chat-compose">
+          <label class="sr-only" for="chat-input">Type your request</label>
+          <textarea id="chat-input" placeholder="Type your request..." data-chat-input aria-label="Type your request" rows="1"></textarea>
+          <button class="ghost voice-btn" type="button" data-voice-toggle aria-label="Start voice input">Talk</button>
+          <button class="ghost voice-btn" type="button" data-speak-toggle aria-label="Toggle spoken replies">Speaker On</button>
+          <button class="button" type="button" data-chat-send aria-label="Send message">Send</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="payment-panel" data-payment hidden>
+    <div class="payment-card">
+      <h3>Payment</h3>
+      <p>Amount: <strong data-payment-amount></strong></p>
+      <p>Method: <strong data-payment-method></strong></p>
+      <button class="button" type="button" data-payment-confirm>Pay Now</button>
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+{% endblock %}
